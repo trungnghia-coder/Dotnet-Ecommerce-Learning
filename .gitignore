@@ -416,3 +416,11 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+
+# Cấu hình bỏ qua các file cài đặt chứa secret
+appsettings.json
+appsettings.Development.json
+appsettings.*.json
+
+
