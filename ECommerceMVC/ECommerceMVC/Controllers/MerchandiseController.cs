@@ -42,7 +42,37 @@ namespace ECommerceMVC.Controllers
                 CategoryName = p.MaLoaiNavigation.TenLoai
             });
             
+            
             return View(result);
+        }
+
+        public IActionResult Detail(int id)
+        {
+            var product = db.HangHoas
+                .Where(p => p.MaHh == id)
+                .Select(p => new MerchandiseDetailVM
+                {
+                    MerchandiseId = p.MaHh,
+                    Merchandisename = p.TenHh,
+                    Price = p.DonGia ?? 0,
+                    Image = p.Hinh ?? "",
+                    Description = p.MoTaDonVi ?? "",
+                    CategoryName = p.MaLoaiNavigation.TenLoai,
+                    DetailDescription = p.MoTa,
+                    Discount = (int)p.GiamGia,
+                    DateCreated = p.NgaySx,
+                    ViewCount = p.SoLanXem
+                })
+                .FirstOrDefault();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
     }
 }
+
+

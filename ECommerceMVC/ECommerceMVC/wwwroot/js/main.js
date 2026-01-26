@@ -131,21 +131,189 @@
 
 
 
-    // Product Quantity
-    $('.quantity button').on('click', function () {
-        var button = $(this);
-        var oldValue = button.parent().parent().find('input').val();
-        if (button.hasClass('btn-plus')) {
-            var newVal = parseFloat(oldValue) + 1;
-        } else {
-            if (oldValue > 0) {
-                var newVal = parseFloat(oldValue) - 1;
-            } else {
-                newVal = 0;
+    // Product Quantity (REMOVE - replaced with specific handlers below)
+    // This code was causing double increment issues
+
+    // Add to Cart functionality
+    $(document).on('click', '.btn-add-to-cart', function (e) {
+        e.preventDefault();
+        var merchandiseId = $(this).data('id');
+        
+        $.ajax({
+            url: '/Cart/AddToCart',
+            type: 'POST',
+            data: { id: merchandiseId, quantity: 1 },
+            success: function (response) {
+                if (response.success) {
+                    // Update cart count
+                    $('#cart-count').text(response.cartCount).show();
+                    
+                    // Show success message
+                    alert('Product added to cart successfully!');
+                }
+            },
+            error: function () {
+                alert('Error adding product to cart. Please try again.');
             }
-        }
-        button.parent().parent().find('input').val(newVal);
+        });
     });
+
+    // Add to Cart from Detail page with quantity
+    $(document).on('click', '.btn-add-to-cart-detail', function (e) {
+        e.preventDefault();
+        var merchandiseId = $(this).data('id');
+        var quantity = parseInt($('#quantity-input').val()) || 1;
+        
+        $.ajax({
+            url: '/Cart/AddToCart',
+            type: 'POST',
+            data: { id: merchandiseId, quantity: quantity },
+            success: function (response) {
+                if (response.success) {
+                    // Update cart count
+                    $('#cart-count').text(response.cartCount).show();
+                    
+                    // Show success message
+                    alert('Product added to cart successfully!');
+                }
+            },
+            error: function () {
+                alert('Error adding product to cart. Please try again.');
+            }
+        });
+    });
+
+    // Quantity buttons for detail page
+    $('#btn-plus').on('click', function (e) {
+        e.preventDefault();
+        var currentVal = parseInt($('#quantity-input').val()) || 1;
+        $('#quantity-input').val(currentVal + 1);
+    });
+
+    $('#btn-minus').on('click', function (e) {
+        e.preventDefault();
+        var currentVal = parseInt($('#quantity-input').val()) || 1;
+        if (currentVal > 1) {
+            $('#quantity-input').val(currentVal - 1);
+        }
+    });
+
+    // Cart page - Update quantity (Plus button)
+    $(document).on('click', '.btn-plus-cart', function (e) {
+        e.preventDefault();
+        var merchandiseId = $(this).data('id');
+        var $row = $('tr[data-id="' + merchandiseId + '"]');
+        var currentQuantity = parseInt($row.find('.item-quantity').val());
+        var newQuantity = currentQuantity + 1;
+
+        updateCartQuantity(merchandiseId, newQuantity, $row);
+    });
+
+    // Cart page - Update quantity (Minus button)
+    $(document).on('click', '.btn-minus-cart', function (e) {
+        e.preventDefault();
+        var merchandiseId = $(this).data('id');
+        var $row = $('tr[data-id="' + merchandiseId + '"]');
+        var currentQuantity = parseInt($row.find('.item-quantity').val());
+        
+        if (currentQuantity > 1) {
+            var newQuantity = currentQuantity - 1;
+            updateCartQuantity(merchandiseId, newQuantity, $row);
+        }
+    });
+
+    // Cart page - Remove item
+    $(document).on('click', '.btn-remove-cart', function (e) {
+        e.preventDefault();
+        var merchandiseId = $(this).data('id');
+        
+        if (confirm('Are you sure you want to remove this item?')) {
+            $.ajax({
+                url: '/Cart/RemoveFromCart',
+                type: 'POST',
+                data: { id: merchandiseId },
+                success: function (response) {
+                    if (response.success) {
+                        // Remove row from table
+                        $('tr[data-id="' + merchandiseId + '"]').fadeOut(300, function() {
+                            $(this).remove();
+                            
+                            // Update cart count
+                            $('#cart-count').text(response.cartCount);
+                            if (response.cartCount === 0) {
+                                $('#cart-count').hide();
+                            }
+
+                            // Check if cart is empty
+                            if (response.isEmpty) {
+                                location.reload();
+                            } else {
+                                // Update totals
+                                updateCartTotals(response.subtotal);
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    alert('Error removing item from cart. Please try again.');
+                }
+            });
+        }
+    });
+
+    // Function to update cart quantity via AJAX
+    function updateCartQuantity(merchandiseId, quantity, $row) {
+        $.ajax({
+            url: '/Cart/UpdateQuantity',
+            type: 'POST',
+            data: { id: merchandiseId, quantity: quantity },
+            success: function (response) {
+                if (response.success) {
+                    if (response.removed) {
+                        // Item was removed (quantity = 0)
+                        $row.fadeOut(300, function() {
+                            $(this).remove();
+                            
+                            // Update cart count
+                            $('#cart-count').text(response.cartCount);
+                            if (response.cartCount === 0) {
+                                $('#cart-count').hide();
+                            }
+
+                            // Check if cart is empty
+                            if (response.isEmpty) {
+                                location.reload();
+                            } else {
+                                // Update totals
+                                updateCartTotals(response.subtotal);
+                            }
+                        });
+                    } else {
+                        // Update quantity display
+                        $row.find('.item-quantity').val(response.quantity);
+                        
+                        // Update item total
+                        $row.find('.item-total').text('$' + response.itemTotal.toFixed(2));
+                        
+                        // Update cart totals
+                        updateCartTotals(response.subtotal);
+                        
+                        // Update cart count in header
+                        $('#cart-count').text(response.cartCount).show();
+                    }
+                }
+            },
+            error: function () {
+                alert('Error updating cart. Please try again.');
+            }
+        });
+    }
+
+    // Function to update cart totals
+    function updateCartTotals(subtotal) {
+        $('.cart-subtotal').text('$' + subtotal.toFixed(2));
+        $('.cart-total').text('$' + subtotal.toFixed(2));
+    }
 
 })(jQuery);
 

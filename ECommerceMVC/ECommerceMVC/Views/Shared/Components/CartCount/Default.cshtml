@@ -1,0 +1,15 @@
+@model int
+
+<a asp-controller="Cart" asp-action="Index" class="position-relative me-4 my-auto">
+    <i class="fa fa-shopping-bag fa-2x"></i>
+    @if (Model > 0)
+    {
+        <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" 
+              style="top: -5px; left: 15px; height: 20px; min-width: 20px;" id="cart-count">@Model</span>
+    }
+    else
+    {
+        <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" 
+              style="top: -5px; left: 15px; height: 20px; min-width: 20px; display: none;" id="cart-count">0</span>
+    }
+</a>

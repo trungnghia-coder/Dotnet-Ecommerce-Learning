@@ -1,0 +1,150 @@
+@model ECommerceMVC.ViewModels.RegisterVM
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_LayoutCustomer";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Register</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item active text-white">Register</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<!-- Register Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="bg-light rounded p-5">
+                    <h3 class="mb-4">Create Account</h3>
+                    
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @Html.Raw(TempData["ErrorMessage"])
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Full Name -->
+                        <div class="form-group mb-3">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-control p-3" placeholder="Enter full name" maxlength="50" autofocus />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control p-3" placeholder="Enter email" maxlength="50" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control p-3" placeholder="Enter password" maxlength="50" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control p-3" placeholder="Confirm password" maxlength="50" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="form-group mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control p-3" placeholder="Enter phone number" maxlength="24" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <textarea asp-for="Address" class="form-control p-3" rows="2" placeholder="Enter address" maxlength="60" id="addressInput"></textarea>
+                            <div class="d-flex justify-content-between">
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                                <small class="text-muted"><span id="addressCount">0</span>/60</small>
+                            </div>
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="form-group mb-3">
+                            <label class="form-label">Gender</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input asp-for="Gender" type="radio" value="true" class="form-check-input" id="male" checked />
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="Gender" type="radio" value="false" class="form-check-input" id="female" />
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="form-group mb-4">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" class="form-control p-3" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-2"></i>Username will be automatically generated for you</small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn border-secondary py-3 text-primary text-uppercase fw-bold">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </button>
+                        </div>
+
+                        <!-- Login Link -->
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a asp-action="Login" class="text-primary fw-bold">Login here</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Register End -->
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Character counter for address field
+        $(document).ready(function() {
+            $('#addressInput').on('input', function() {
+                var currentLength = $(this).val().length;
+                $('#addressCount').text(currentLength);
+                
+                if (currentLength > 55) {
+                    $('#addressCount').addClass('text-warning fw-bold');
+                } else {
+                    $('#addressCount').removeClass('text-warning fw-bold');
+                }
+            });
+            
+            // Initialize counter on page load
+            var initialLength = $('#addressInput').val().length;
+            $('#addressCount').text(initialLength);
+        });
+    </script>
+}
+

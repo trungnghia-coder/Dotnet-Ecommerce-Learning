@@ -1,0 +1,251 @@
+@model ECommerceMVC.ViewModels.MerchandiseDetailVM
+@{
+    ViewData["Title"] = Model.Merchandisename;
+    Layout = "_LayoutCustomer";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Product Details</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Merchandise" asp-action="Index">Shop</a></li>
+        <li class="breadcrumb-item active text-white">@Model.Merchandisename</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<!-- Single Product Start -->
+<div class="container-fluid py-5 mt-5">
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8 col-xl-9">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="border rounded">
+                            <a href="#">
+                                <img src="~/Hinh/HangHoa/@Model.Image" class="img-fluid rounded" alt="@Model.Merchandisename"
+                                     onerror="this.src='~/img/single-item.jpg'">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4 class="fw-bold mb-3">@Model.Merchandisename</h4>
+                        <p class="mb-3">Category: @Model.CategoryName</p>
+                        <h5 class="fw-bold mb-3">$@Model.Price</h5>
+                        <div class="d-flex mb-4">
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star text-secondary"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <p class="mb-4">@Model.Description</p>
+                        @if (!string.IsNullOrEmpty(Model.DetailDescription))
+                        {
+                            <p class="mb-4">@Model.DetailDescription</p>
+                        }
+                        <div class="input-group quantity mb-5" style="width: 100px;">
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-minus rounded-circle bg-light border" id="btn-minus">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="text" id="quantity-input" class="form-control form-control-sm text-center border-0" value="1" readonly>
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-plus rounded-circle bg-light border" id="btn-plus">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary btn-add-to-cart-detail" data-id="@Model.MerchandiseId">
+                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to Cart
+                        </button>
+                    </div>
+                    <div class="col-lg-12">
+                        <nav>
+                            <div class="nav nav-tabs mb-3">
+                                <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
+                                        aria-controls="nav-about" aria-selected="true">Description</button>
+                                <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                                        id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
+                                        aria-controls="nav-mission" aria-selected="false">Reviews</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content mb-5">
+                            <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                                <p>@(Model.DetailDescription ?? Model.Description)</p>
+                                <div class="px-2">
+                                    <div class="row g-4">
+                                        <div class="col-6">
+                                            @if (Model.Discount.HasValue && Model.Discount > 0)
+                                            {
+                                                <div class="row bg-light align-items-center text-center justify-content-center py-2">
+                                                    <div class="col-6">
+                                                        <p class="mb-0">Discount</p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <p class="mb-0">@Model.Discount%</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (Model.DateCreated.HasValue)
+                                            {
+                                                <div class="row text-center align-items-center justify-content-center py-2">
+                                                    <div class="col-6">
+                                                        <p class="mb-0">Date Created</p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <p class="mb-0">@Model.DateCreated.Value.ToString("dd/MM/yyyy")</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="row bg-light text-center align-items-center justify-content-center py-2">
+                                                <div class="col-6">
+                                                    <p class="mb-0">Views</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="mb-0">@Model.ViewCount</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
+                                <p class="text-center text-muted py-4">No reviews yet for this product.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="#">
+                        <h4 class="mb-5 fw-bold">Leave a Review</h4>
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="border-bottom rounded">
+                                    <input type="text" class="form-control border-0 me-4" placeholder="Your Name *">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="border-bottom rounded">
+                                    <input type="email" class="form-control border-0" placeholder="Email *">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="border-bottom rounded my-4">
+                                    <textarea name="" id="" class="form-control border-0" cols="30" rows="8" placeholder="Your Review *" spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="d-flex justify-content-between py-3 mb-5">
+                                    <div class="d-flex align-items-center">
+                                        <p class="mb-0 me-3">Rating:</p>
+                                        <div class="d-flex align-items-center" style="font-size: 12px;">
+                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <a href="#" class="btn border border-secondary text-primary rounded-pill px-4 py-3">Submit Review</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4 col-xl-3">
+                <div class="row g-4 fruite">
+                    <!-- Search Box -->
+                    <div class="col-lg-12">
+                        <form asp-controller="Merchandise" asp-action="Index" method="get">
+                            <div class="input-group w-100 mx-auto d-flex mb-4">
+                                <input type="search" name="query" class="form-control p-3" placeholder="Search..." aria-describedby="search-icon-1">
+                                <button type="submit" id="search-icon-1" class="input-group-text p-3 btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Category Menu ViewComponent -->
+                        @await Component.InvokeAsync("CategoryMenu")
+                    </div>
+                    
+                    <div class="col-lg-12">
+                        <h4 class="mb-4">Featured Products</h4>
+                        <div class="d-flex align-items-center justify-content-start">
+                            <div class="rounded" style="width: 100px; height: 100px;">
+                                <img src="~/img/featur-1.jpg" class="img-fluid rounded" alt="Image">
+                            </div>
+                            <div>
+                                <h6 class="mb-2">Big Banana</h6>
+                                <div class="d-flex mb-2">
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div class="d-flex mb-2">
+                                    <h5 class="fw-bold me-2">2.99 $</h5>
+                                    <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-start">
+                            <div class="rounded" style="width: 100px; height: 100px;">
+                                <img src="~/img/featur-2.jpg" class="img-fluid rounded" alt="">
+                            </div>
+                            <div>
+                                <h6 class="mb-2">Big Banana</h6>
+                                <div class="d-flex mb-2">
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div class="d-flex mb-2">
+                                    <h5 class="fw-bold me-2">2.99 $</h5>
+                                    <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-start">
+                            <div class="rounded" style="width: 100px; height: 100px;">
+                                <img src="~/img/featur-3.jpg" class="img-fluid rounded" alt="">
+                            </div>
+                            <div>
+                                <h6 class="mb-2">Big Banana</h6>
+                                <div class="d-flex mb-2">
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div class="d-flex mb-2">
+                                    <h5 class="fw-bold me-2">2.99 $</h5>
+                                    <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center my-4">
+                            <a asp-controller="Merchandise" asp-action="Index" class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Xem thêm</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="position-relative">
+                            <img src="~/img/banner-fruits.jpg" class="img-fluid w-100 rounded" alt="">
+                            <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                                <h3 class="text-secondary fw-bold">Fresh <br> Fruits <br> Banner</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Single Product End -->

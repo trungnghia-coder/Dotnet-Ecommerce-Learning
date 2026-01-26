@@ -1,5 +1,9 @@
 using ECommerceMVC.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+
+// Set UTF-8 encoding
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Hshop2023Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("HShop") ?? throw new InvalidOperationException("Connection string 'Hshop2023Context' not found.")));
+
+// Add Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -21,6 +34,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
