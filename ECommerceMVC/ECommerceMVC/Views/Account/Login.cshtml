@@ -41,11 +41,11 @@
                     <form asp-action="Login" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <!-- Username -->
+                        <!-- Email or Phone -->
                         <div class="form-group mb-3">
-                            <label asp-for="Username" class="form-label"></label>
-                            <input asp-for="Username" class="form-control p-3" placeholder="Enter username" autofocus />
-                            <span asp-validation-for="Username" class="text-danger"></span>
+                            <label asp-for="EmailOrPhone" class="form-label"></label>
+                            <input asp-for="EmailOrPhone" class="form-control p-3" placeholder="Enter email or phone number" autofocus />
+                            <span asp-validation-for="EmailOrPhone" class="text-danger"></span>
                         </div>
 
                         <!-- Password -->

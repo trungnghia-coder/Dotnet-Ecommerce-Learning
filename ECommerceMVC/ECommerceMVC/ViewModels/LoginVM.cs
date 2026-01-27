@@ -4,9 +4,9 @@ namespace ECommerceMVC.ViewModels
 {
     public class LoginVM
     {
-        [Required(ErrorMessage = "Username is required")]
-        [Display(Name = "Username")]
-        public string Username { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Email or Phone number is required")]
+        [Display(Name = "Email or Phone")]
+        public string EmailOrPhone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required")]
         [Display(Name = "Password")]
@@ -17,3 +17,4 @@ namespace ECommerceMVC.ViewModels
         public bool RememberMe { get; set; }
     }
 }
+
