@@ -37,3 +37,4 @@ public partial class HoaDon
 
     public virtual TrangThai MaTrangThaiNavigation { get; set; } = null!;
 }
+

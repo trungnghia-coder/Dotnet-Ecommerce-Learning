@@ -1,0 +1,95 @@
+@model ECommerceMVC.Data.HoaDon
+@{
+    ViewData["Title"] = "Order Confirmation";
+    Layout = "_LayoutCustomer";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Order Confirmation</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item active text-white">Order Confirmation</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<!-- Order Confirmation Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="text-center mb-5">
+                    <i class="fas fa-check-circle text-success" style="font-size: 100px;"></i>
+                    <h2 class="text-success mt-3">Order Placed Successfully!</h2>
+                    <p class="lead">Thank you for your order. We'll process it shortly.</p>
+                </div>
+
+                <div class="bg-light rounded p-4">
+                    <h4 class="mb-4">Order Details</h4>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Order Number:</div>
+                        <div class="col-md-8">#@Model.MaHd</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Order Date:</div>
+                        <div class="col-md-8">@Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Customer Name:</div>
+                        <div class="col-md-8">@Model.HoTen</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Delivery Address:</div>
+                        <div class="col-md-8">@Model.DiaChi</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 fw-bold">Payment Method:</div>
+                        <div class="col-md-8">
+                            @if (Model.CachThanhToan == "COD")
+                            {
+                                <span class="badge bg-info">Cash On Delivery</span>
+                            }
+                            else
+                            {
+                                <span>@Model.CachThanhToan</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.GhiChu))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Note:</div>
+                            <div class="col-md-8">@Model.GhiChu</div>
+                        </div>
+                    }
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>What's next?</strong><br>
+                        We will process your order and contact you for delivery confirmation.
+                        You will receive updates via email or phone.
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4 py-2 me-2">
+                            <i class="fas fa-home me-2"></i>Continue Shopping
+                        </a>
+                        <a href="#" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                            <i class="fas fa-list me-2"></i>View My Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Order Confirmation End -->

@@ -1,0 +1,368 @@
+@model ECommerceMVC.ViewModels.CheckoutVM
+@{
+    ViewData["Title"] = "Checkout";
+    Layout = "_LayoutCustomer";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Checkout</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Cart" asp-action="Index">Cart</a></li>
+        <li class="breadcrumb-item active text-white">Checkout</li>
+    </ol>
+</div>
+<!-- Single Page Header End -->
+
+<!-- Checkout Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @Html.Raw(TempData["ErrorMessage"])
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <h1 class="mb-4">Billing details</h1>
+        <form asp-action="PlaceOrder" method="post">
+            <div class="row g-5">
+                <div class="col-md-12 col-lg-6 col-xl-7">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Use Familiar Customer Information Checkbox -->
+                    <div class="form-check my-4">
+                        <input asp-for="UseFamiliarInfo" class="form-check-input" type="checkbox" id="UseFamiliarInfo">
+                        <label class="form-check-label fw-bold" for="UseFamiliarInfo">
+                            Use Familiar Customer Information
+                        </label>
+                        <small class="form-text text-muted d-block">Check this to auto-fill your information from your account</small>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="form-item mb-3">
+                        <label asp-for="FullName" class="form-label">Full Name <sup class="text-danger">*</sup></label>
+                        <input asp-for="FullName" class="form-control p-3" placeholder="Enter full name" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-item mb-3">
+                        <label asp-for="Address" class="form-label">Address <sup class="text-danger">*</sup></label>
+                        <textarea asp-for="Address" class="form-control p-3" rows="2" placeholder="House Number, Street Name" maxlength="60"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-item mb-3">
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number <sup class="text-danger">*</sup></label>
+                        <input asp-for="PhoneNumber" class="form-control p-3" placeholder="Enter phone number" maxlength="24" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Note -->
+                    <div class="form-item">
+                        <label asp-for="Note" class="form-label">Order Notes (Optional)</label>
+                        <textarea asp-for="Note" class="form-control p-3" rows="4" placeholder="Notes about your order, e.g. special notes for delivery" maxlength="500"></textarea>
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-lg-6 col-xl-5">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Products</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="d-flex align-items-center mt-2">
+                                                <img src="~/Hinh/HangHoa/@item.Image" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="@item.Merchandisename" onerror="this.src='~/img/vegetable-item-3.png'">
+                                            </div>
+                                        </th>
+                                        <td class="py-5">@item.Merchandisename</td>
+                                        <td class="py-5">$@item.Price.ToString("N2")</td>
+                                        <td class="py-5">@item.Quantity</td>
+                                        <td class="py-5">$@item.Total.ToString("N2")</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td class="py-5"></td>
+                                    <td class="py-5"></td>
+                                    <td class="py-5">
+                                        <p class="mb-0 text-dark py-3">Subtotal</p>
+                                    </td>
+                                    <td class="py-5">
+                                        <div class="py-3 border-bottom border-top">
+                                            <p class="mb-0 text-dark">$@Model.TotalAmount.ToString("N2")</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td class="py-5">
+                                        <p class="mb-0 text-dark py-4">Shipping</p>
+                                    </td>
+                                    <td colspan="3" class="py-5">
+                                        <div class="form-check text-start">
+                                            <input type="radio" class="form-check-input bg-primary border-0" id="Shipping-1" name="Shipping" value="Free" checked>
+                                            <label class="form-check-label" for="Shipping-1">Free Shipping</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td class="py-5">
+                                        <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>
+                                    </td>
+                                    <td class="py-5"></td>
+                                    <td class="py-5"></td>
+                                    <td class="py-5">
+                                        <div class="py-3 border-bottom border-top">
+                                            <p class="mb-0 text-dark fw-bold h5">$@Model.TotalAmount.ToString("N2")</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                        <div class="col-12">
+                            <div class="form-check text-start my-3">
+                                <input asp-for="PaymentMethod" type="radio" class="form-check-input bg-primary border-0"
+                                       id="Payment-COD" value="COD" checked>
+                                <label class="form-check-label" for="Payment-COD">
+                                    <i class="fa fa-money-bill me-2"></i>Cash On Delivery
+                                </label>
+                            </div>
+
+                            <div class="form-check text-start my-3">
+                                <input asp-for="PaymentMethod" type="radio" class="form-check-input bg-primary border-0"
+                                       id="Payment-PayPal" value="PayPal">
+                                <label class="form-check-label" for="Payment-PayPal">
+                                    <i class="fab fa-paypal me-2"></i>PayPal
+                                </label>
+                            </div>
+
+                            <div class="form-check text-start my-3">
+                                <input asp-for="PaymentMethod" type="radio" class="form-check-input bg-primary border-0"
+                                       id="Payment-VNPay" value="VNPay">
+                                <label class="form-check-label" for="Payment-VNPay">
+                                    <i class="fas fa-credit-card me-2"></i>VNPay
+                                </label>
+                            </div>
+
+                            <p class="text-start text-dark" id="payment-description">
+                                Pay when you receive your order. Only cash payment is accepted.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+                        <button type="submit" id="btn-place-order" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary fw-bold">
+                            <i class="fa fa-check-circle me-2"></i>Place Order
+                        </button>
+                    </div>
+
+                    <!-- PayPal Button Container (Hidden by default) -->
+                    <div id="paypal-button-container" class="w-100" style="display:none;"></div>
+
+                    <!-- VNPay Button Container (Hidden by default) -->
+                    <div id="vnpay-button-container" class="w-100 pt-4" style="display:none;">
+                        <button type="button" id="btn-vnpay" class="btn btn-success py-3 px-4 text-uppercase w-100 fw-bold">
+                            <i class="fas fa-credit-card me-2"></i>Pay with VNPay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Checkout Page End -->
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+    
+<!-- PayPal SDK - ClientId from appsettings.json (safe to expose, public key only) -->
+<script src="https://www.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientId&currency=USD"></script>
+
+<script >
+        $(document).ready(function() {
+            // Handle Use Familiar Info checkbox
+            $('#UseFamiliarInfo').on('change', function() {
+                if ($(this).is(':checked')) {
+                    // Fetch customer info from server
+                    $.ajax({
+                        url: '@Url.Action("GetCustomerInfo", "Checkout")',
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#FullName').val(response.fullName);
+                                $('#Address').val(response.address);
+                                $('#PhoneNumber').val(response.phoneNumber);
+                            }
+                        },
+                        error: function() {
+                            console.error('Error loading customer information');
+                        }
+                    });
+                } else {
+                    // Clear fields
+                    $('#FullName').val('');
+                    $('#Address').val('');
+                    $('#PhoneNumber').val('');
+                }
+            });
+
+            // Initialize with customer info if checkbox is already checked
+            if ($('#UseFamiliarInfo').is(':checked')) {
+                $('#UseFamiliarInfo').trigger('change');
+            }
+        });
+
+        // Payment method toggle
+        $('input[name="PaymentMethod"]').on('change', function() {
+            var paymentMethod = $(this).val();
+
+            // Hide all payment buttons first
+            $('#btn-place-order').hide();
+            $('#paypal-button-container').hide();
+            $('#vnpay-button-container').hide();
+
+            // Show appropriate button and update description
+            if (paymentMethod === 'PayPal') {
+                $('#paypal-button-container').show();
+                $('#payment-description').text('You will be redirected to PayPal to complete your payment securely.');
+            } else if (paymentMethod === 'VNPay') {
+                $('#vnpay-button-container').show();
+                $('#payment-description').text('You will be redirected to VNPay to complete your payment securely.');
+            } else {
+                // COD
+                $('#btn-place-order').show();
+                $('#payment-description').text('Pay when you receive your order. Only cash payment is accepted.');
+            }
+        });
+
+        // PayPal Button Configuration
+        paypal.Buttons({
+            createOrder: function() {
+                // Validate form
+                if (!$('#FullName').val() || !$('#Address').val() || !$('#PhoneNumber').val()) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                // Call API to create PayPal order
+                return fetch('@Url.Action("CreatePayPalOrder", "Checkout")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(@Model.TotalAmount)
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        return data.orderId; // PayPal orderId
+                    } else {
+                        alert('Error creating PayPal order: ' + data.message);
+                    }
+                });
+            },
+
+            onApprove: function(data) {
+                // User approved payment, capture it
+                return fetch('@Url.Action("CapturePayPalOrder", "Checkout")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        orderId: data.orderID,
+                        fullName: $('#FullName').val(),
+                        address: $('#Address').val(),
+                        phoneNumber: $('#PhoneNumber').val(),
+                        note: $('#Note').val()
+                    })
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        // Redirect to order confirmation
+                        window.location.href = '@Url.Action("OrderConfirmation", "Checkout")' + '?orderId=' + result.orderId;
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                });
+            },
+
+            onError: function(err) {
+                console.error('PayPal error:', err);
+                alert('An error occurred with PayPal payment. Please try again.');
+            }
+        }).render('#paypal-button-container');
+
+        // VNPay Button Handler
+        $('#btn-vnpay').on('click', function() {
+            // Validate form
+            if (!$('#FullName').val() || !$('#Address').val() || !$('#PhoneNumber').val()) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Prepare form data
+            var formData = {
+                OrderId: 0, // Will be set by backend
+                FullName: $('#FullName').val(),
+                Description: $('#Address').val(),
+                Amount: @Model.TotalAmount,
+                CreatedDate: new Date()
+            };
+
+            // Create form and submit (VNPay requires form POST)
+            var form = $('<form>', {
+                'method': 'POST',
+                'action': '@Url.Action("CreateVnPayPayment", "Checkout")'
+            });
+
+            // Add anti-forgery token
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': '__RequestVerificationToken',
+                'value': $('input[name="__RequestVerificationToken"]').val()
+            }));
+
+            // Add form fields
+            $.each(formData, function(key, value) {
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': key,
+                    'value': value
+                }));
+            });
+
+            // Append to body and submit
+            $('body').append(form);
+            form.submit();
+        });
+    </script>
+}

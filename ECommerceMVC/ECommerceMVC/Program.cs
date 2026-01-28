@@ -1,6 +1,7 @@
 using ECommerceMVC.Data;
 using ECommerceMVC.Helpers;
 using ECommerceMVC.Middleware;
+using ECommerceMVC.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +29,19 @@ builder.Services.AddSession(options =>
 // Register JwtHelper
 builder.Services.AddScoped<JwtHelper>();
 
+// Register AuthHelper
+builder.Services.AddScoped<AuthHelper>();
+
+// Register CartService
+builder.Services.AddScoped<CartService>();
+
+// Register PayPalService
+builder.Services.Configure<PayPalSettings>(builder.Configuration.GetSection("Paypal"));
+builder.Services.AddScoped<PayPalService>();
+
+// Register VnPayService
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+
 // Add Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -47,13 +61,27 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-    
+
     // Get token from cookie
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
         {
             context.Token = context.Request.Cookies["fruitables_ac"];
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            // Ch? redirect v? Login n?u KHÔNG ph?i API và endpoint KHÔNG CÓ [AllowAnonymous]
+            var endpoint = context.HttpContext.GetEndpoint();
+            var allowAnonymous = endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null;
+            
+            if (!allowAnonymous && !context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.HandleResponse();
+                var returnUrl = context.Request.Path + context.Request.QueryString;
+                context.Response.Redirect($"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
             return Task.CompletedTask;
         }
     };

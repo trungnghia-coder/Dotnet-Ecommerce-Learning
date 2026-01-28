@@ -28,23 +28,10 @@ namespace ECommerceMVC.Middleware
 
                     if (principal != null)
                     {
-                        // Extract user info from token
-                        var username = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        var fullName = principal.FindFirst(ClaimTypes.Name)?.Value;
-                        var role = principal.FindFirst(ClaimTypes.Role)?.Value;
-
-                        // Restore session if empty
-                        if (string.IsNullOrEmpty(context.Session.GetString("Username")) && !string.IsNullOrEmpty(username))
-                        {
-                            context.Session.SetString("Username", username);
-                            context.Session.SetString("FullName", fullName ?? "");
-                            context.Session.SetInt32("Role", int.Parse(role ?? "0"));
-
-                            _logger.LogInformation($"Session restored from token for user: {username}");
-                        }
-
-                        // Set user claims
+                        // Set user claims for authorization
                         context.User = principal;
+
+                        _logger.LogInformation($"JWT validated for user: {principal.FindFirst(ClaimTypes.NameIdentifier)?.Value}");
                     }
                     else
                     {
@@ -52,7 +39,6 @@ namespace ECommerceMVC.Middleware
                         _logger.LogWarning("Invalid token detected, clearing cookies");
                         context.Response.Cookies.Delete("fruitables_ac");
                         context.Response.Cookies.Delete("fruitables_rf");
-                        context.Session.Clear();
                     }
                 }
                 catch (Exception ex)
@@ -61,7 +47,6 @@ namespace ECommerceMVC.Middleware
                     // Clear invalid token
                     context.Response.Cookies.Delete("fruitables_ac");
                     context.Response.Cookies.Delete("fruitables_rf");
-                    context.Session.Clear();
                 }
             }
 

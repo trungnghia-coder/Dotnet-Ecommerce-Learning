@@ -1,18 +1,34 @@
 using ECommerceMVC.Helpers;
-using ECommerceMVC.ViewModels;
+using ECommerceMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceMVC.ViewComponents
 {
     public class CartCountViewComponent : ViewComponent
     {
-        private const string CART_KEY = "SHOPPING_CART";
+        private readonly CartService _cartService;
+        private readonly AuthHelper _authHelper;
 
-        public IViewComponentResult Invoke()
+        public CartCountViewComponent(CartService cartService, AuthHelper authHelper)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<List<CartItemVM>>(CART_KEY) ?? new List<CartItemVM>();
+            _cartService = cartService;
+            _authHelper = authHelper;
+        }
+
+        public async Task<IViewComponentResult> InvokeAsync()
+        {
+            var userInfo = _authHelper.GetCurrentUser(HttpContext);
+            var sessionId = PersistentSessionHelper.GetOrCreatePersistentSessionId(HttpContext);
+
+            var cart = userInfo != null
+                ? await _cartService.GetCartFromDatabaseAsync(userInfo.Username)
+                : await _cartService.GetCartFromDatabaseBySessionAsync(sessionId);
+
             var count = cart.Count;
             return View(count);
         }
     }
 }
+
+
+

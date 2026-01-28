@@ -95,7 +95,9 @@
                                 <h5 class="mb-0 ps-4 me-4">Total</h5>
                                 <p class="mb-0 pe-4 cart-total">$@Model.Sum(x => x.Total).ToString("N2")</p>
                             </div>
-                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed to Checkout</button>
+                            <a asp-controller="Checkout" asp-action="Index" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4 d-block text-center text-decoration-none">
+                                <i class="fa fa-check-circle me-2"></i>Proceed to Checkout
+                            </a>
                         </div>
                     </div>
                 </div>

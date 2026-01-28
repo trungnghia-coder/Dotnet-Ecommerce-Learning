@@ -1,5 +1,6 @@
 using ECommerceMVC.Data;
 using ECommerceMVC.Helpers;
+using ECommerceMVC.Services;
 using ECommerceMVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +13,15 @@ namespace ECommerceMVC.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly JwtHelper _jwtHelper;
         private readonly IConfiguration _configuration;
+        private readonly CartService _cartService;
 
-        public AccountController(Hshop2023Context context, ILogger<AccountController> logger, JwtHelper jwtHelper, IConfiguration configuration)
+        public AccountController(Hshop2023Context context, ILogger<AccountController> logger, JwtHelper jwtHelper, IConfiguration configuration, CartService cartService)
         {
             _context = context;
             _logger = logger;
             _jwtHelper = jwtHelper;
             _configuration = configuration;
+            _cartService = cartService;
         }
 
         #region Register
@@ -183,10 +186,10 @@ namespace ECommerceMVC.Controllers
                         _logger.LogInformation($"User logged in (session-only): {customer.MaKh}");
                     }
 
-                    // Store user info in session as fallback
-                    HttpContext.Session.SetString("Username", customer.MaKh);
-                    HttpContext.Session.SetString("FullName", customer.HoTen);
-                    HttpContext.Session.SetInt32("Role", customer.VaiTro);
+                    // Merge anonymous cart to user cart using persistent session ID
+                    var sessionId = PersistentSessionHelper.GetOrCreatePersistentSessionId(HttpContext);
+                    await _cartService.MergeCartAsync(sessionId, customer.MaKh);
+                    _logger.LogInformation($"Cart merged for user: {customer.MaKh} from session: {sessionId}");
 
                     _logger.LogInformation($"User logged in: {customer.MaKh}");
                     
@@ -219,9 +222,6 @@ namespace ECommerceMVC.Controllers
         #region Logout
         public IActionResult Logout()
         {
-            // Clear session
-            HttpContext.Session.Clear();
-            
             // Clear cookies
             Response.Cookies.Delete("fruitables_ac");
             Response.Cookies.Delete("fruitables_rf");

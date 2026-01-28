@@ -21,6 +21,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<ChuDe> ChuDes { get; set; }
 
+    public virtual DbSet<GioHang> GioHangs { get; set; }
+
     public virtual DbSet<GopY> Gopies { get; set; }
 
     public virtual DbSet<HangHoa> HangHoas { get; set; }
@@ -265,6 +267,35 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.RandomKey)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<GioHang>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.ToTable("GioHang");
+
+            entity.Property(e => e.MaKh)
+                .HasMaxLength(20)
+                .HasColumnName("MaKH");
+            entity.Property(e => e.SessionId).HasMaxLength(100);
+            entity.Property(e => e.MaHh).HasColumnName("MaHH");
+            entity.Property(e => e.NgayTao)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.NgayCapNhat)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.KhachHang)
+                .WithMany()
+                .HasForeignKey(d => d.MaKh)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.HangHoa)
+                .WithMany()
+                .HasForeignKey(d => d.MaHh)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Loai>(entity =>
